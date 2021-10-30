@@ -102,3 +102,10 @@ user_ethnicities_table_command = '''CREATE TABLE IF NOT EXISTS user_ethnicities(
     FOREIGN KEY(ethnicity_id) REFERENCES ethnicities(ethnicity_id),
     PRIMARY KEY (user_id, ethnicity_id)
 );'''
+
+connections_table_command = '''CREATE TABLE IF NOT EXISTS connections(
+    user_id1 INT NOT NULL,
+    user_id2 INT NOT NULL,
+    connection_date DATE NOT NULL,
+    PRIMARY KEY (user_id1, user_id2)
+);'''
