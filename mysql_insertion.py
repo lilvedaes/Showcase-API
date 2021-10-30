@@ -15,8 +15,7 @@ def create_user(app, user: User):
     check_command = ('SELECT user_id FROM users WHERE first_name = "' + user.first_name + '" AND last_name = "' + user.last_name + '";')
     execute_mysql_commands(app, [insert_command])
     result = execute_mysql_commands(app, [check_command])
-    user.user_id = result[0][0][0]
-    print(user.user_id)
+    user.user_id = result[0][0][0] # Now the user has an id, set it in the object
 
 
 def add_sample_data(app):
@@ -26,6 +25,5 @@ def add_sample_data(app):
     create_user(app, user1)
     create_user(app, user2)
     create_user(app, user3)
-    print(execute_mysql_commands(app, ["SELECT * FROM users;"]))
     add_connection(app, user1.user_id, user2.user_id)
     add_connection(app, user2.user_id, user3.user_id)
