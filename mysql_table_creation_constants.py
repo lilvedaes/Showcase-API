@@ -33,6 +33,7 @@ users_table_command = '''CREATE TABLE IF NOT EXISTS users(
     location VARCHAR(50),
     title VARCHAR(100),
     pronoun_id INT,
+    gender VARCHAR(50),
     union_status_id INT,
     height INT,
     weight INT,

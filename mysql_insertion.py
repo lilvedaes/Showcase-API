@@ -13,7 +13,7 @@ def add_connection(app, user_id1, user_id2):
 
 def create_user(app, user: User):
     user_data = user.get_values()[1:] # get all data except user_id
-    insert_command = ('INSERT INTO users (first_name, last_name, profile_image_url, location, title, pronoun_id, union_status_id, height, weight, eye_colour, hair_colour, age_range_start, age_range_end, about_info) VALUES ("%s", "%s", "%s", "%s", "%s", %d, %d, %d, %d, "%s", "%s", %d, %d, "%s")' %user_data)
+    insert_command = ('INSERT INTO users (first_name, last_name, profile_image_url, location, title, pronoun_id, gender, union_status_id, height, weight, eye_colour, hair_colour, age_range_start, age_range_end, about_info) VALUES ("%s", "%s", "%s", "%s", "%s", %d, "%s", %d, %d, %d, "%s", "%s", %d, %d, "%s")' %user_data)
     check_command = ('SELECT user_id FROM users WHERE first_name = "' + user.first_name + '" AND last_name = "' + user.last_name + '";')
     execute_mysql_commands(app, [insert_command])
     result = execute_mysql_commands(app, [check_command])[0][0]
@@ -21,9 +21,9 @@ def create_user(app, user: User):
 
 
 def add_sample_data(app):
-    user1 = User(None, "Nyah", "Way", "profile_url", "Toronto", "Student", 2, 3, 10, 20, 'brown', 'brown', 17, 25, "Nyah's about info")
-    user2 = User(None, "Daniela", "Venturo Esaine", "profile_url2", "Toronto", "Student", 2, 2, 12, 22, 'brown', 'white', 18, 26, "Daniela's about info")
-    user3 = User(None, "Jackson", "Han", "profile_url3", "Toronto", "Student", 3, 3, 9, 25, 'dark brown', 'black', 18, 25, "Jackson's about info")
+    user1 = User(user_id=None, first_name="Nyah",    last_name="Way",            profile_image_url="profile_url",  location="Toronto, ON", title="Student", pronoun_id=2, gender="Female", union_status_id=3, height=10, weight=20, eye_colour='brown',      hair_colour='brown', age_range_start=17, age_range_end=25, about_info="Nyah's about info")
+    user2 = User(user_id=None, first_name="Daniela", last_name="Venturo Esaine", profile_image_url="profile_url2", location="Toronto, ON", title="Student", pronoun_id=2, gender="Female", union_status_id=2, height=12, weight=22, eye_colour='brown',      hair_colour='white', age_range_start=18, age_range_end=26, about_info="Daniela's about info")
+    user3 = User(user_id=None, first_name="Jackson", last_name="Han",            profile_image_url="profile_url3", location="Toronto, ON", title="Student", pronoun_id=3, gender="Male",   union_status_id=3, height=9,  weight=25, eye_colour='dark brown', hair_colour='black', age_range_start=18, age_range_end=25, about_info="Jackson's about info")
     create_user(app, user1)
     create_user(app, user2)
     create_user(app, user3)
