@@ -1,6 +1,7 @@
-from flask import Flask
+from flask import Flask, request
 from mysql_setup import setup_database
 from mysql_insertion import *
+import json
 
 app = Flask(__name__)
 
@@ -11,6 +12,13 @@ add_sample_data(app)
 @app.route("/")
 def hello():
     return "Hello World!"
+
+@app.route("/network")
+def networking():
+    curr_user_id = int(request.args.get('curr_user_id'))
+    connection_dist = int(request.args.get('connection_dist'))
+    connections = get_network_connections(app, curr_user_id, connection_dist)
+    return json.dumps({ 'connections': [c.__dict__ for c in connections]})
 
 
 if __name__ == "__main__":
