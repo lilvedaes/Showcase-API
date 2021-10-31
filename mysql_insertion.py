@@ -30,14 +30,14 @@ def add_sample_data(app):
     add_connection(app, user1.user_id, user2.user_id)
     add_connection(app, user2.user_id, user3.user_id)
 
-def get_network_connections(app, user_id, max_connection_dist = 1):
-    prev_ids = [user_id]
+def get_network_connections(app, filter: Network_Filter):
+    prev_ids = [filter.user_id]
     next_ids = []
     curr_index = 0
-    users = [get_user_by_id(app, user_id)]
+    users = [get_user_by_id(app, filter.user_id)]
     users[0].connection_dist = 0
     
-    for connection_dist in range(1, max_connection_dist + 1):
+    for connection_dist in range(1, filter.connection_dist + 1):
         while (curr_index < len(prev_ids)):
             command = "SELECT * FROM connections WHERE user_id1 = " + str(prev_ids[curr_index]) + " OR user_id2 = " + str(prev_ids[curr_index]) + ";"
             results = execute_mysql_commands(app, [command])[0]
@@ -45,13 +45,18 @@ def get_network_connections(app, user_id, max_connection_dist = 1):
                 ids = remove_from_tuple(connection[:2], prev_ids) # Get a list of ids in connection we haven't seen before
                 if len(ids) == 0: # ids should only ever contain 0 or 1 elements now
                     continue
-                users.append(get_user_by_id(app, ids[0]))
-                users[-1].connection_dist = connection_dist
-                next_ids.append(users[-1].user_id)
+                user = get_user_by_id(app, ids[0])
+                add_user_based_on_filter(users, user, connection_dist, filter)
+                next_ids.append(user.user_id)
             curr_index += 1
         prev_ids.extend(next_ids)
         next_ids = []
     return users
+
+def add_user_based_on_filter(lst: list, user: User, connection_dist: int, filter: Network_Filter):
+    if filter.user_applicable(user, connection_dist):
+        lst.append(user)
+        lst[-1].connection_dist = connection_dist
 
 def get_user_by_id(app, user_id):
     command = "SELECT * FROM users WHERE user_id = " + str(user_id) + ";"

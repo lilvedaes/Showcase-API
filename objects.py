@@ -1,3 +1,5 @@
+import re
+
 class User:
     connection_dist = -1
 
@@ -31,3 +33,35 @@ class User:
     
     def get_connection_dist(self):
         return self.connection_dist
+
+
+class Network_Filter:
+    def __init__(self, user_id, profession, connection_dist, location, gender, age, skills, languages, union_status):
+        self.user_id = user_id
+        self.profession = profession
+        self.connection_dist = connection_dist
+        self.location = location
+        self.gender = gender
+
+
+
+        self.age = age if age != None else "0-300"
+        self.start_age = int(re.search(r'^(\d+)', self.age).group(1))
+        self.end_age = re.search(r'(\d+)$', self.age).group(1)
+        self.end_age = 300 if self.end_age == '' else int(self.end_age)
+        self.skills = skills
+        self.languages = languages
+        self.union_status = union_status
+
+    def user_applicable(self, user: User, connection_dist):
+        if ((self.profession != None and self.profession.lower() not in user.title.lower()) or
+            (self.connection_dist != None and self.connection_dist <= connection_dist) or
+            (self.gender != None and user.gender.lower() != self.gender.lower()) or
+            # (self.union_status != None and self.union user.union_status_id) or # TODO: get union status from user's union status id
+            # (self.skills != None and all([s in user.skills for s in self.skills])) # TODO: save user skills
+            (self.location != None and self.location.lower() not in user.location.lower()) or
+            (self.age != None and (user.age_range_end < self.start_age or self.end_age < user.age_range_start))
+            ):
+            return False
+        
+        return True
