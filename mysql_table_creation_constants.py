@@ -110,3 +110,45 @@ connections_table_command = '''CREATE TABLE IF NOT EXISTS connections(
     connection_date DATE NOT NULL,
     PRIMARY KEY (user_id1, user_id2)
 );'''
+
+post_types_table_command = '''CREATE TABLE IF NOT EXISTS post_types(
+    post_type_id INT NOT NULL AUTO_INCREMENT,
+    post_type VARCHAR (50) NOT NULL,
+    PRIMARY KEY (post_type_id)
+);'''
+
+post_types_insert_command = '''REPLACE INTO post_types
+        (post_type_id, post_type)
+    VALUES
+        (1, "Text"),
+        (2, "Video"),
+        (3, "Photo"),
+        (4, "Audio"),
+        (5, "File");'''
+
+posts_table_command = '''CREATE TABLE IF NOT EXISTS posts(
+    post_id INT NOT NULL AUTO_INCREMENT,
+    user_id INT,
+    post_type_id INT,
+    time_stamp TIMESTAMP,
+    date_time DATETIME,
+    caption VARCHAR(500),
+    likes INT,
+    media_url VARCHAR(200),
+    FOREIGN KEY(user_id) REFERENCES user(user_id),
+    FOREIGN KEY(post_type_id) REFERENCES post_types(post_type_id),
+    PRIMARY KEY (post_id)
+);'''
+
+comments_table_command = '''CREATE TABLE IF NOT EXISTS comments(
+    comment_id INT NOT NULL AUTO_INCREMENT,
+    user_id INT,
+    post_id INT,
+    time_stamp TIMESTAMP,
+    date_time DATETIME,
+    comment VARCHAR(500),
+    likes INT,
+    FOREIGN KEY(user_id) REFERENCES user(user_id),
+    FOREIGN KEY(post_id) REFERENCES posts(post_id),
+    PRIMARY KEY (comment_id)
+);'''

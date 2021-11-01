@@ -3,7 +3,7 @@ from mysql_table_creation_constants import *
 
 mysql = None
 
-table_setup = [ # Be careful of order, some databases rely on others
+table_setup = [  # Be careful of order, some databases rely on others
     {'name': 'pronouns', 'setup': pronouns_table_command},
     {'name': 'union_statuses', 'setup': union_status_table_command},
     {'name': 'users', 'setup': users_table_command},
@@ -11,23 +11,28 @@ table_setup = [ # Be careful of order, some databases rely on others
     {'name': 'credits', 'setup': credits_table_command},
     {'name': 'ethnicities', 'setup': ethnicities_table_command},
     {'name': 'user_ethnicities', 'setup': user_ethnicities_table_command},
-    {'name': 'connections', 'setup': connections_table_command}
+    {'name': 'connections', 'setup': connections_table_command},
+    {'name': 'post_types', 'setup': post_types_table_command},
+    {'name': 'posts', 'setup': posts_table_command},
+    {'name': 'comments', 'setup': comments_table_command}
 ]
 
-def setup_database (app):
+
+def setup_database(app):
     global mysql
     # MySQL configuration
     app.config['MYSQL_HOST'] = 'localhost'
     app.config['MYSQL_USER'] = 'root'
     app.config['MYSQL_PASSWORD'] = ''
     app.config['MYSQL_DB'] = 'sigma_db'
-    
+
     mysql = MySQL(app)
 
     # Uncomment next line to remove all data and re-initialize
     reset_data(app, mysql)
     # create_tables(app, mysql)
     # initialize_tables(app, mysql)
+
 
 def create_tables(app, mysql):
     with app.app_context():
@@ -36,6 +41,7 @@ def create_tables(app, mysql):
             cursor.execute(database['setup'])
         mysql.connection.commit()
         cursor.close()
+
 
 def initialize_tables(app, mysql):
     # ONLY for data that should always be initizalized
@@ -49,6 +55,7 @@ def initialize_tables(app, mysql):
         mysql.connection.commit()
         cursor.close()
 
+
 def reset_data(app, mysql):
     with app.app_context():
         cursor = mysql.connection.cursor()
@@ -58,6 +65,7 @@ def reset_data(app, mysql):
         cursor.close()
     create_tables(app, mysql)
     initialize_tables(app, mysql)
+
 
 def execute_mysql_commands(app, commands: list):
     results = []

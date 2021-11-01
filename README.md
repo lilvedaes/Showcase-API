@@ -5,7 +5,7 @@ Team Sigma aims to help young artists who are just starting out in the industry.
 
 ## Project setup
 Follow these instructions to run the project after cloning locally:
-1. Install [MySQL installer](https://dev.mysql.com/downloads/installer/) and install MySQL Server 8.0.25
+1. Install [MySQL installer](https://dev.mysql.com/downloads/installer/) and install MySQL Server
     1. Set the MySQL root password as empty (no password)
 2. At root, create a virtual environment with these commands on your terminal, alternatively, your IDE can create a venv for you:
     1. Run `python -m venv venv`
