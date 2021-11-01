@@ -81,3 +81,29 @@ def get_user_by_id(app, user_id):
     command = "SELECT * FROM users WHERE user_id = " + str(user_id) + ";"
     user = execute_mysql_commands(app, [command])[0][0]
     return User(*user)
+
+
+def add_post(app, post: Post):
+    command = ("INSERT INTO posts (post_id, user_id, post_type_id, posted_date, caption, likes, media_url) "
+               "VALUES (" + str(post.post_id) + ", " + str(post.user_id) + ", " + str(post.post_type_id) +
+               ", '" + post.posted_date + "', ''" + post.caption + "', " + str(post.likes) + ", '" + post.media_url +
+               "');")
+    return execute_mysql_commands(app, [command])
+
+
+def delete_post(app, post_id: int):
+    command = ("DELETE FROM posts WHERE post_id = " + str(post_id) + ";")
+    return execute_mysql_commands(app, [command])
+
+
+def add_comment(app, comment: Comment):
+    command = ("INSERT INTO comments (comment_id, user_id, post_id, comment_date, comment, likes) "
+               "VALUES (" + str(comment.comment_id) + ", " + str(comment.user_id) + ", " + str(comment.post_id) +
+               ", '" + comment.comment_date + "', ''" + comment.comment +
+               "');")
+    return execute_mysql_commands(app, [command])
+
+
+def delete_comment(app, comment_id: int):
+    command = ("DELETE FROM comments WHERE comment_id = " + str(comment_id) + ";")
+    return execute_mysql_commands(app, [command])

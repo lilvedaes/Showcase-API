@@ -52,6 +52,7 @@ def initialize_tables(app, mysql):
         cursor.execute(union_insert_command)
         cursor.execute(production_type_insert_command)
         cursor.execute(ethnicities_insert_command)
+        cursor.execute(post_types_insert_command)
         mysql.connection.commit()
         cursor.close()
 

@@ -64,3 +64,24 @@ class Network_Filter:
             return False
 
         return True
+
+
+class Post:
+    def __init__(self, post_id: int, user_id: int, post_type_id: id, posted_date: str, caption: str,
+                 likes: int, media_url: str):
+        self.post_id = post_id
+        self.user_id = user_id
+        self.post_type_id = post_type_id
+        self.posted_date = posted_date
+        self.caption = caption
+        self.likes = likes
+        self.media_url = media_url
+
+
+class Comment:
+    def __init__(self, comment_id: int, user_id: int, post_id: id, comment_date: str, comment: str):
+        self.comment_id = comment_id
+        self.user_id = user_id
+        self.post_id = post_id
+        self.comment_date = comment_date
+        self.comment = comment
