@@ -1,3 +1,5 @@
+from typing import List
+
 from mysql_setup import execute_mysql_commands
 import time
 from objects import *
@@ -84,10 +86,19 @@ def get_user_by_id(app, user_id):
 
 
 def add_post(app, post: Post):
-    command = ("INSERT INTO posts (post_id, user_id, post_type_id, posted_date, caption, likes, media_url) "
-               "VALUES (" + str(post.post_id) + ", " + str(post.user_id) + ", " + str(post.post_type_id) +
+    command = ("INSERT INTO posts (user_id, post_type_id, posted_date, caption, likes, media_url) "
+               "VALUES (" + str(post.user_id) + ", " + str(post.post_type_id) +
                ", '" + post.posted_date + "', ''" + post.caption + "', " + str(post.likes) + ", '" + post.media_url +
                "');")
+    execute_mysql_commands(app, [command])
+
+    check_command = ("SELECT post_id FROM posts WHERE user_id = " + str(post.user_id) + "AND post_type_id = " +
+                     str(post.post_type_id) + "AND posted_date = '" + post.posted_date + "'" + "AND caption = '" +
+                     post.caption + "';")
+
+    result = execute_mysql_commands(app, [check_command])[0][0]
+    post.post_id = result[0]  # Now the post has an id, set it in the object
+
     return execute_mysql_commands(app, [command])
 
 
@@ -96,14 +107,54 @@ def delete_post(app, post_id: int):
     return execute_mysql_commands(app, [command])
 
 
+def get_posts(app, post_ids_lst: List[int]):
+    raw_results = []
+    for post_id in post_ids_lst:
+        command = ("SELECT * FROM posts WHERE post_id = " + str(post_id) + ";")
+        raw_results.extend(execute_mysql_commands(app, [command]))
+
+    results = []
+    for i in range(len(raw_results)):
+        post = Post(post_id=raw_results[0][i][0][0], user_id=raw_results[0][i][0][1], post_type_id=raw_results[0][i][0][2],
+                    posted_date=raw_results[0][i][0][3], caption=raw_results[0][i][0][4], likes=raw_results[0][i][0][5],
+                    media_url=raw_results[0][i][0][6])
+        results.append(post)
+
+    return results
+
+
 def add_comment(app, comment: Comment):
-    command = ("INSERT INTO comments (comment_id, user_id, post_id, comment_date, comment, likes) "
-               "VALUES (" + str(comment.comment_id) + ", " + str(comment.user_id) + ", " + str(comment.post_id) +
+    command = ("INSERT INTO comments (user_id, post_id, comment_date, comment, likes) "
+               "VALUES (" + str(comment.user_id) + ", " + str(comment.post_id) +
                ", '" + comment.comment_date + "', ''" + comment.comment +
                "');")
+    execute_mysql_commands(app, [command])
+
+    check_command = ("SELECT comment_id FROM comments WHERE user_id = " + str(comment.user_id) + "AND post_id = " +
+                     str(comment.post_id) + "AND comment_date = '" + comment.comment_date + "'" + "AND comment = '" +
+                     comment.comment + "';")
+
+    result = execute_mysql_commands(app, [check_command])[0][0]
+    comment.comment_id = result[0]  # Now the comment has an id, set it in the object
+
     return execute_mysql_commands(app, [command])
 
 
 def delete_comment(app, comment_id: int):
     command = ("DELETE FROM comments WHERE comment_id = " + str(comment_id) + ";")
     return execute_mysql_commands(app, [command])
+
+
+def get_comments(app, comment_ids_lst: List[int]):
+    raw_results = []
+    for comment_id in comment_ids_lst:
+        command = ("SELECT * FROM comments WHERE comment_id = " + str(comment_id) + ";")
+        raw_results.extend(execute_mysql_commands(app, [command]))
+
+    results = []
+    for i in range(len(raw_results)):
+        comment = Comment(comment_id=raw_results[0][i][0][0], user_id=raw_results[0][i][0][1], post_id=raw_results[0][i][0][2],
+                    comment_date=raw_results[0][i][0][3], comment=raw_results[0][i][0][4], likes=raw_results[0][i][0][5])
+        results.append(comment)
+
+    return results
