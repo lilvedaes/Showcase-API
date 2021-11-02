@@ -114,7 +114,7 @@ def get_posts(app, post_ids_lst: List[int]):
         raw_results.extend(execute_mysql_commands(app, [command]))
 
     results = []
-    for i in range(len(raw_results)):
+    for i in range(len(raw_results[0])):
         post = Post(post_id=raw_results[0][i][0][0], user_id=raw_results[0][i][0][1], post_type_id=raw_results[0][i][0][2],
                     posted_date=raw_results[0][i][0][3], caption=raw_results[0][i][0][4], likes=raw_results[0][i][0][5],
                     media_url=raw_results[0][i][0][6])
@@ -152,7 +152,22 @@ def get_comments(app, comment_ids_lst: List[int]):
         raw_results.extend(execute_mysql_commands(app, [command]))
 
     results = []
-    for i in range(len(raw_results)):
+    for i in range(len(raw_results[0])):
+        comment = Comment(comment_id=raw_results[0][i][0][0], user_id=raw_results[0][i][0][1], post_id=raw_results[0][i][0][2],
+                    comment_date=raw_results[0][i][0][3], comment=raw_results[0][i][0][4], likes=raw_results[0][i][0][5])
+        results.append(comment)
+
+    return results
+
+
+def get_post_comments(app, post_ids_lst: List[int]):
+    raw_results = []
+    for post_id in post_ids_lst:
+        command = ("SELECT * FROM comments WHERE post_id = " + str(post_id) + ";")
+        raw_results.extend(execute_mysql_commands(app, [command]))
+
+    results = []
+    for i in range(len(raw_results[0])):
         comment = Comment(comment_id=raw_results[0][i][0][0], user_id=raw_results[0][i][0][1], post_id=raw_results[0][i][0][2],
                     comment_date=raw_results[0][i][0][3], comment=raw_results[0][i][0][4], likes=raw_results[0][i][0][5])
         results.append(comment)

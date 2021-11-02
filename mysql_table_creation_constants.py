@@ -134,7 +134,7 @@ posts_table_command = '''CREATE TABLE IF NOT EXISTS posts(
     caption VARCHAR(500),
     likes INT,
     media_url VARCHAR(200),
-    FOREIGN KEY(user_id) REFERENCES user(user_id),
+    FOREIGN KEY(user_id) REFERENCES users(user_id),
     FOREIGN KEY(post_type_id) REFERENCES post_types(post_type_id),
     PRIMARY KEY (post_id)
 );'''
@@ -146,7 +146,7 @@ comments_table_command = '''CREATE TABLE IF NOT EXISTS comments(
     comment_date DATE NOT NULL,
     comment VARCHAR(500),
     likes INT,
-    FOREIGN KEY(user_id) REFERENCES user(user_id),
+    FOREIGN KEY(user_id) REFERENCES users(user_id),
     FOREIGN KEY(post_id) REFERENCES posts(post_id),
     PRIMARY KEY (comment_id)
 );'''

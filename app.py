@@ -42,5 +42,23 @@ def get_network_filters():
     return json.dumps(network_filters)
 
 
+@app.route("/posts/<post_id>")
+def get_post_by_id(post_id):
+    post = get_posts(app, [post_id])
+    return json.dumps({'post': [p.__dict__ for p in post]})
+
+
+@app.route("/comments/<comment_id>")
+def get_comments_by_id(comment_id):
+    comment = get_comments(app, [comment_id])
+    return json.dumps({'comment': [c.__dict__ for c in comment]})
+
+
+@app.route("/posts/<post_id>/comments")
+def get_comments_by_post_id(post_id):
+    comments = get_post_comments(app, [post_id])
+    return json.dumps({'comments': [c.__dict__ for c in comments]})
+
+
 if __name__ == "__main__":
     app.run()
