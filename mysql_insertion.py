@@ -88,18 +88,14 @@ def get_user_by_id(app, user_id):
 def add_post(app, post: Post):
     command = ("INSERT INTO posts (user_id, post_type_id, posted_date, caption, likes, media_url) "
                "VALUES (" + str(post.user_id) + ", " + str(post.post_type_id) +
-               ", '" + post.posted_date + "', ''" + post.caption + "', " + str(post.likes) + ", '" + post.media_url +
+               ", '" + post.posted_date + "', '" + post.caption + "', " + str(post.likes) + ", '" + post.media_url +
                "');")
-    execute_mysql_commands(app, [command])
+    check_command = ("SELECT LAST_INSERT_ID();")
 
-    check_command = ("SELECT post_id FROM posts WHERE user_id = " + str(post.user_id) + "AND post_type_id = " +
-                     str(post.post_type_id) + "AND posted_date = '" + post.posted_date + "'" + "AND caption = '" +
-                     post.caption + "';")
+    result = execute_mysql_commands(app, [command, check_command])
+    post.post_id = result[1][0][0]  # Now the post has an id, set it in the object
 
-    result = execute_mysql_commands(app, [check_command])[0][0]
-    post.post_id = result[0]  # Now the post has an id, set it in the object
-
-    return execute_mysql_commands(app, [command])
+    return post.post_id
 
 
 def delete_post(app, post_id: int):
@@ -115,9 +111,25 @@ def get_posts(app, post_ids_lst: List[int]):
 
     results = []
     for i in range(len(raw_results[0])):
-        post = Post(post_id=raw_results[0][i][0][0], user_id=raw_results[0][i][0][1], post_type_id=raw_results[0][i][0][2],
-                    posted_date=raw_results[0][i][0][3], caption=raw_results[0][i][0][4], likes=raw_results[0][i][0][5],
-                    media_url=raw_results[0][i][0][6])
+        post = Post(post_id=raw_results[0][i][0], user_id=raw_results[0][i][1], post_type_id=raw_results[0][i][2],
+                    posted_date=raw_results[0][i][3], caption=raw_results[0][i][4], likes=raw_results[0][i][5],
+                    media_url=raw_results[0][i][6])
+        results.append(post)
+
+    return results
+
+
+def get_users_posts(app, user_ids_lst: List[int]):
+    raw_results = []
+    for user_id in user_ids_lst:
+        command = ("SELECT * FROM posts WHERE user_id = " + str(user_id) + ";")
+        raw_results.extend(execute_mysql_commands(app, [command]))
+
+    results = []
+    for i in range(len(raw_results[0])):
+        post = Post(post_id=raw_results[0][i][0], user_id=raw_results[0][i][1], post_type_id=raw_results[0][i][2],
+                    posted_date=raw_results[0][i][3], caption=raw_results[0][i][4], likes=raw_results[0][i][5],
+                    media_url=raw_results[0][i][6])
         results.append(post)
 
     return results
@@ -126,18 +138,15 @@ def get_posts(app, post_ids_lst: List[int]):
 def add_comment(app, comment: Comment):
     command = ("INSERT INTO comments (user_id, post_id, comment_date, comment, likes) "
                "VALUES (" + str(comment.user_id) + ", " + str(comment.post_id) +
-               ", '" + comment.comment_date + "', ''" + comment.comment +
-               "');")
-    execute_mysql_commands(app, [command])
+               ", '" + comment.comment_date + "', '" + comment.comment + "', " + str(comment.likes) +
+               ");")
 
-    check_command = ("SELECT comment_id FROM comments WHERE user_id = " + str(comment.user_id) + "AND post_id = " +
-                     str(comment.post_id) + "AND comment_date = '" + comment.comment_date + "'" + "AND comment = '" +
-                     comment.comment + "';")
+    check_command = ("SELECT LAST_INSERT_ID();")
 
-    result = execute_mysql_commands(app, [check_command])[0][0]
-    comment.comment_id = result[0]  # Now the comment has an id, set it in the object
+    result = execute_mysql_commands(app, [command, check_command])
+    comment.comment_id = result[1][0][0]  # Now the comment has an id, set it in the object
 
-    return execute_mysql_commands(app, [command])
+    return comment.comment_id
 
 
 def delete_comment(app, comment_id: int):
@@ -153,8 +162,8 @@ def get_comments(app, comment_ids_lst: List[int]):
 
     results = []
     for i in range(len(raw_results[0])):
-        comment = Comment(comment_id=raw_results[0][i][0][0], user_id=raw_results[0][i][0][1], post_id=raw_results[0][i][0][2],
-                    comment_date=raw_results[0][i][0][3], comment=raw_results[0][i][0][4], likes=raw_results[0][i][0][5])
+        comment = Comment(comment_id=raw_results[0][i][0], user_id=raw_results[0][i][1], post_id=raw_results[0][i][2],
+                    comment_date=raw_results[0][i][3], comment=raw_results[0][i][4], likes=raw_results[0][i][5])
         results.append(comment)
 
     return results
@@ -168,8 +177,31 @@ def get_post_comments(app, post_ids_lst: List[int]):
 
     results = []
     for i in range(len(raw_results[0])):
-        comment = Comment(comment_id=raw_results[0][i][0][0], user_id=raw_results[0][i][0][1], post_id=raw_results[0][i][0][2],
-                    comment_date=raw_results[0][i][0][3], comment=raw_results[0][i][0][4], likes=raw_results[0][i][0][5])
+        comment = Comment(comment_id=raw_results[0][i][0], user_id=raw_results[0][i][1], post_id=raw_results[0][i][2],
+                    comment_date=raw_results[0][i][3], comment=raw_results[0][i][4], likes=raw_results[0][i][5])
         results.append(comment)
 
     return results
+
+
+def add_sample_posts_with_comments(app):
+    post1 = Post(post_id=None, user_id=1, post_type_id=1, posted_date=time.strftime('%Y-%m-%d %H:%M:%S'),
+                 caption="In the beach!", likes=0, media_url="")
+    post2 = Post(post_id=None, user_id=1, post_type_id=1, posted_date=time.strftime('%Y-%m-%d %H:%M:%S'),
+                 caption="Another caption!", likes=0, media_url="")
+    post3 = Post(post_id=None, user_id=2, post_type_id=1, posted_date=time.strftime('%Y-%m-%d %H:%M:%S'),
+                 caption="In the sand!", likes=0, media_url="")
+    post1_id = add_post(app, post1)
+    post2_id = add_post(app, post2)
+    post3_id = add_post(app, post3)
+
+    comment1 = Comment(comment_id=None, user_id=1, post_id=post1_id, comment_date=time.strftime('%Y-%m-%d %H:%M:%S'),
+                       comment="Looks awesome!", likes=0)
+    comment2 = Comment(comment_id=None, user_id=1, post_id=post1_id, comment_date=time.strftime('%Y-%m-%d %H:%M:%S'),
+                       comment="Looks great!", likes=0)
+    comment3 = Comment(comment_id=None, user_id=2, post_id=post3_id, comment_date=time.strftime('%Y-%m-%d %H:%M:%S'),
+                       comment="Looks amazing!", likes=0)
+
+    add_comment(app, comment1)
+    add_comment(app, comment2)
+    add_comment(app, comment3)

@@ -112,7 +112,7 @@ connections_table_command = '''CREATE TABLE IF NOT EXISTS connections(
 );'''
 
 post_types_table_command = '''CREATE TABLE IF NOT EXISTS post_types(
-    post_type_id INT NOT NULL AUTO_INCREMENT,
+    post_type_id INT NOT NULL,
     post_type VARCHAR (50) NOT NULL,
     PRIMARY KEY (post_type_id)
 );'''

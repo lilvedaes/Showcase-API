@@ -9,6 +9,7 @@ app = Flask(__name__)
 # MySQL configuration
 setup_database(app)
 add_sample_data(app)
+add_sample_posts_with_comments(app)
 
 
 @app.route("/")
@@ -45,19 +46,25 @@ def get_network_filters():
 @app.route("/posts/<post_id>")
 def get_post_by_id(post_id):
     post = get_posts(app, [post_id])
-    return json.dumps({'post': [p.__dict__ for p in post]})
+    return json.dumps({'post': [p.__dict__ for p in post]}, default=str)
 
 
-@app.route("/comments/<comment_id>")
-def get_comments_by_id(comment_id):
-    comment = get_comments(app, [comment_id])
-    return json.dumps({'comment': [c.__dict__ for c in comment]})
+@app.route("/posts/user/<user_id>")
+def get_post_by_user_id(user_id):
+    post = get_users_posts(app, [user_id])
+    return json.dumps({'post': [p.__dict__ for p in post]}, default=str)
 
 
 @app.route("/posts/<post_id>/comments")
 def get_comments_by_post_id(post_id):
     comments = get_post_comments(app, [post_id])
-    return json.dumps({'comments': [c.__dict__ for c in comments]})
+    return json.dumps({'comments': [c.__dict__ for c in comments]}, default=str)
+
+
+@app.route("/comments/<comment_id>")
+def get_comments_by_id(comment_id):
+    comment = get_comments(app, [comment_id])
+    return json.dumps({'comment': [c.__dict__ for c in comment]}, default=str)
 
 
 if __name__ == "__main__":

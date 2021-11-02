@@ -79,9 +79,10 @@ class Post:
 
 
 class Comment:
-    def __init__(self, comment_id: int, user_id: int, post_id: id, comment_date: str, comment: str):
+    def __init__(self, comment_id: int, user_id: int, post_id: id, comment_date: str, comment: str, likes: int):
         self.comment_id = comment_id
         self.user_id = user_id
         self.post_id = post_id
         self.comment_date = comment_date
         self.comment = comment
+        self.likes = likes
