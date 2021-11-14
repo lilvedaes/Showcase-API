@@ -14,7 +14,12 @@ table_setup = [  # Be careful of order, some databases rely on others
     {'name': 'connections', 'setup': connections_table_command},
     {'name': 'post_types', 'setup': post_types_table_command},
     {'name': 'posts', 'setup': posts_table_command},
-    {'name': 'comments', 'setup': comments_table_command}
+    {'name': 'comments', 'setup': comments_table_command},
+    {'name': 'socials', 'setup': socials_table_command},
+    {'name': 'user_socials', 'setup': user_socials_table_command},
+    {'name': 'demo_reels', 'setup': demo_reels_table_command},
+    {'name': 'education', 'setup': education_table_command},
+    {'name': 'skills', 'setup': skills_table_command}
 ]
 
 
@@ -53,6 +58,7 @@ def initialize_tables(app, mysql):
         cursor.execute(production_type_insert_command)
         cursor.execute(ethnicities_insert_command)
         cursor.execute(post_types_insert_command)
+        cursor.execute(socials_insert_command)
         mysql.connection.commit()
         cursor.close()
 
@@ -74,6 +80,17 @@ def execute_mysql_commands(app, commands: list):
         cursor = mysql.connection.cursor()
         for command in commands:
             cursor.execute(command)
+            results.append(cursor.fetchall())
+        mysql.connection.commit()
+        cursor.close()
+    return results
+
+def execute_prepared_mysql_commands(app, commands: list, parameters: list):
+    results = []
+    with app.app_context():
+        cursor = mysql.connection.cursor()
+        for index in range(len(commands)):
+            cursor.execute(commands[index], parameters)
             results.append(cursor.fetchall())
         mysql.connection.commit()
         cursor.close()

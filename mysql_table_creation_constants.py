@@ -61,23 +61,26 @@ production_type_insert_command = '''REPLACE INTO production_types
         (4, "short film"),
         (5, "feature film"),
         (6, "solo theatre"),
-        (7, "audiobook");'''
+        (7, "audiobook"),
+        (8, "TV show");'''
 
 credits_table_command = '''CREATE TABLE IF NOT EXISTS credits(
     user_id INT NOT NULL,
     production_name VARCHAR(100) NOT NULL,
     role VARCHAR (100) NOT NULL,
-    start_date DATE NOT NULL,
-    end_date DATE NOT NULL,
-    photo_url VARCHAR (200),
-    production_type_id INT,
+    start_date VARCHAR(50) NOT NULL,
+    end_date VARCHAR(50),
+    src_type VARCHAR (50),
+    src_url VARCHAR (200),
+    production_type VARCHAR(50) NOT NULL,
     director VARCHAR(100),
     producer VARCHAR(100),
     production_link VARCHAR(200),
+    description VARCHAR(500) NOT NULL,
     FOREIGN KEY(user_id) REFERENCES users(user_id),
-    FOREIGN KEY(production_type_id) REFERENCES production_types(production_type_id),
     PRIMARY KEY(user_id, production_name, role, start_date, end_date)
 );'''
+
 
 ethnicities_table_command = '''CREATE TABLE IF NOT EXISTS ethnicities(
     ethnicity_id INT NOT NULL AUTO_INCREMENT,
@@ -122,7 +125,7 @@ post_types_insert_command = '''REPLACE INTO post_types
     VALUES
         (1, "Text"),
         (2, "Video"),
-        (3, "Photo"),
+        (3, "Image"),
         (4, "Audio"),
         (5, "File");'''
 
@@ -149,4 +152,58 @@ comments_table_command = '''CREATE TABLE IF NOT EXISTS comments(
     FOREIGN KEY(user_id) REFERENCES users(user_id),
     FOREIGN KEY(post_id) REFERENCES posts(post_id),
     PRIMARY KEY (comment_id)
+);'''
+demo_reels_table_command = '''CREATE TABLE IF NOT EXISTS demo_reels(
+    user_id INT NOT NULL,
+    title VARCHAR(100),
+    src_url VARCHAR(500) NOT NULL,
+    FOREIGN KEY(user_id) REFERENCES users(user_id),
+    PRIMARY KEY (user_id, src_url)
+);'''
+
+socials_table_command = '''CREATE TABLE IF NOT EXISTS socials(
+    label VARCHAR(50) NOT NULL,
+    icon VARCHAR(50) NOT NULL,
+    PRIMARY KEY (label)
+);'''
+socials_insert_command = '''REPLACE INTO socials
+        (label, icon)
+    VALUES
+        ("other", ""),
+        ("IMDb", "fab fa-imdb"),
+        ("Instagram", "fab fa-instagram"),
+        ("YouTube", "fab fa-youtube"),
+        ("Facebook", "fab fa-facebook"),
+        ("Twitter", "fab fa-twitter"),
+        ("Snapchat", "fab fa-snapchat"),
+        ("TikTok", "fab fa-tiktok"),
+        ("Website", ""),
+        ("Backstage", ""),
+        ("Actors Access", "");'''
+
+user_socials_table_command = '''CREATE TABLE IF NOT EXISTS user_socials(
+    user_id INT NOT NULL,
+    label VARCHAR(50) NOT NULL,
+    social_link VARCHAR(200) NOT NULL,
+    FOREIGN KEY(user_id) REFERENCES users(user_id),
+    FOREIGN KEY(label) REFERENCES socials(label),
+    PRIMARY KEY (user_id, social_link)
+);'''
+
+skills_table_command = '''CREATE TABLE IF NOT EXISTS skills(
+    user_id INT NOT NULL,
+    skill VARCHAR(100) NOT NULL,
+    FOREIGN KEY(user_id) REFERENCES users(user_id),
+    PRIMARY KEY (user_id, skill)
+);'''
+
+education_table_command = '''CREATE TABLE IF NOT EXISTS education(
+    user_id INT NOT NULL,
+    title VARCHAR(100) NOT NULL,
+    start_date VARCHAR(50) NOT NULL,
+    end_date VARCHAR(50),
+    institution VARCHAR(150) NOT NULL,
+    institution_logo_url VARCHAR(200),
+    FOREIGN KEY(user_id) REFERENCES users(user_id),
+    PRIMARY KEY (user_id, title, institution)
 );'''

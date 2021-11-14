@@ -5,6 +5,38 @@ class User:
     connection_dist = -1
 
     def __init__(self, user_id: int, first_name: str, last_name: str, profile_image_url: str,
+                 location: str, title: str, pronoun: str, gender: str, union_status: str,
+                 height: int, weight: int, eye_colour: str, hair_colour: str, age_range_start: int,
+                 age_range_end: int, about_info: str):
+        self.user_id = user_id
+        self.first_name = first_name
+        self.last_name = last_name
+        self.profile_image_url = profile_image_url
+        self.location = location
+        self.title = title
+        self.pronoun = pronoun
+        self.gender = gender
+        self.union_status = union_status
+        self.height = height
+        self.weight = weight
+        self.eye_colour = eye_colour
+        self.hair_colour = hair_colour
+        self.age_range_start = age_range_start
+        self.age_range_end = age_range_end
+        self.about_info = about_info
+
+    def get_values(self):
+        # Used for insertion into MySQL database
+        return (self.user_id, self.first_name, self.last_name, self.profile_image_url,
+        self.location, self.title, self.pronoun, self.gender, self.union_status,
+        self.height, self.weight, self.eye_colour, self.hair_colour, self.age_range_start,
+        self.age_range_end, self.about_info)
+    
+    def get_connection_dist(self):
+        return self.connection_dist
+
+class DBUser:
+    def __init__(self, user_id: int, first_name: str, last_name: str, profile_image_url: str,
                  location: str, title: str, pronoun_id: int, gender: str, union_status_id: int,
                  height: int, weight: int, eye_colour: str, hair_colour: str, age_range_start: int,
                  age_range_end: int, about_info: str):
@@ -86,3 +118,40 @@ class Comment:
         self.comment_date = comment_date
         self.comment = comment
         self.likes = likes
+
+class Credit:
+    def __init__(self, user_id: int, production_name: str, role: str, start_date: str, end_date: str, src_type: str, src_url: str, production_type: str, director: str, producer: str, production_link: str, description: str):
+        self.user_id = int(user_id)
+        self.production_name = production_name
+        self.role = role
+        self.start_date = start_date
+        self.end_date = end_date or ""
+        self.src_type = src_type or ""
+        if (self.src_type != ""):
+            self.src_type = self.src_type.capitalize()
+        self.src_url = src_url or ""
+        self.production_type = production_type
+        self.director = director or ""
+        self.producer = producer or ""
+        self.production_link = production_link or ""
+        self.description = description or ""
+
+    def get_values(self):
+        # Used for insertion into MySQL database
+        return (self.user_id, self.production_name, self.role, self.start_date,
+        self.end_date, self.src_type, self.src_url, self.production_type, self.director,
+        self.producer, self.production_link, self.description)
+
+class Education:
+    def __init__(self, user_id: int, title: str, start_date: str, end_date: str, institution: str, institution_logo_url: str):
+        self.user_id = user_id
+        self.title = title
+        self.start_date = start_date
+        self.end_date = end_date
+        self.institution = institution
+        self.institution_logo_url = institution_logo_url
+
+    def get_values(self):
+        # Used for insertion into MySQL database
+        return (self.user_id, self.title, self.start_date, self.end_date,
+        self.institution, self.institution_logo_url)

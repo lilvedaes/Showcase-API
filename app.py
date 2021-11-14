@@ -42,6 +42,30 @@ def networking():
 def get_network_filters():
     return json.dumps(network_filters)
 
+@app.route("/user/<user_id>")
+def get_user_from_id(user_id):
+    user = get_user_by_id(app, user_id)
+    user.connections = get_num_connections(app, user_id)
+    user.socials = get_socials(app, user_id)
+    user.demo_reels = get_demo_reels(app, user_id)
+    user.education = [e.__dict__ for e in get_education(app, user_id)]
+    user.skills = get_skills(app, user_id)
+    user.ethnicities = get_ethnicities(app, user_id)
+    user.media = get_user_media(app, user_id)
+    user.appearance = [
+     { 'title': 'Height', 'value': user.height },
+     { 'title': 'Eye Color', 'value': user.eye_colour },
+     { 'title': 'Weight', 'value': user.weight },
+     { 'title': 'Hair Color', 'value': user.hair_colour },
+     { 'title': 'Age Range', 'value': str(user.age_range_start) + '-' + str(user.age_range_end) },
+    ]
+    return json.dumps({ 'data': user.__dict__ })
+
+@app.route("/credits/<user_id>")
+def get_user_credits(user_id):
+    credits = get_credits(app, user_id)
+    return json.dumps({ 'data': [c.__dict__ for c in credits] })
+
 
 @app.route("/posts/<post_id>")
 def get_post_by_id(post_id):
