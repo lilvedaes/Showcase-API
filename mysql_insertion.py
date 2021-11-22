@@ -2,7 +2,8 @@ from typing import List
 
 from mysql_setup import execute_mysql_commands, execute_prepared_mysql_commands
 import time
-from objects import *
+from objects import DBUser, Credit, Education, User, Post, Network_Filter, Comment
+# from objects import *
 
 remove_from_tuple = lambda lst, ignore_elems: [i for i in lst if i not in ignore_elems]
 
@@ -22,29 +23,6 @@ def create_user(app, user: DBUser):
     execute_mysql_commands(app, [insert_command])
     result = execute_mysql_commands(app, [check_command])[0][0]
     user.user_id = result[0]  # Now the user has an id, set it in the object
-
-def add_credit(app, credit: Credit):
-    credit_data = credit.get_values()
-    insert_command = '''INSERT INTO credits (user_id, production_name, role, start_date, end_date, src_type, src_url, production_type, director, producer, production_link, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
-    execute_prepared_mysql_commands(app, [insert_command], credit_data)
-
-def add_social(app, user_id, label, social_link):
-    insert_command = '''INSERT INTO user_socials (user_id, label, social_link) VALUES (%s, %s, %s)'''
-    execute_prepared_mysql_commands(app, [insert_command], (user_id, label, social_link))
-
-def add_demo_reel(app, user_id, title, src_url):
-    insert_command = '''INSERT INTO demo_reels (user_id, title, src_url) VALUES (%s, %s, %s)'''
-    execute_prepared_mysql_commands(app, [insert_command], (user_id, title, src_url))
-
-def add_skill(app, user_id, skill):
-    insert_command = '''INSERT INTO skills (user_id, skill) VALUES (%s, %s)'''
-    execute_prepared_mysql_commands(app, [insert_command], (user_id, skill))
-
-def add_ethnicity(app, user_id, ethnicity):
-    find_ethnicity_id = 'SELECT ethnicity_id FROM ethnicities WHERE ethnicity = "' + ethnicity + '";'
-    ethnicity_ids = execute_mysql_commands(app, [find_ethnicity_id])[0][0]
-    insert_command = '''INSERT INTO user_ethnicities (user_id, ethnicity_id) VALUES (%s, %s)'''
-    execute_prepared_mysql_commands(app, [insert_command], (user_id, ethnicity_ids[0]))
 
 def add_credit(app, credit: Credit):
     credit_data = credit.get_values()
@@ -123,7 +101,7 @@ def get_network_connections(app, filter: Network_Filter):
     users = [get_user_by_id(app, filter.user_id)]
     users[0].connection_dist = 0
 
-    for connection_dist in range(1, filter.connection_dist + 1):
+    for connection_dist in range(1, max(filter.connection_dists) + 1):
         while (curr_index < len(prev_ids)):
             command = "SELECT * FROM connections WHERE user_id1 = " + str(
                 prev_ids[curr_index]) + " OR user_id2 = " + str(prev_ids[curr_index]) + ";"

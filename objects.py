@@ -69,12 +69,12 @@ class DBUser:
 
 
 class Network_Filter:
-    def __init__(self, user_id, profession, connection_dist, location, gender, age, skills, languages, union_status):
+    def __init__(self, user_id, professions, connection_dists, locations, genders, age, skills, languages, union_statuses):
         self.user_id = user_id
-        self.profession = profession
-        self.connection_dist = connection_dist
-        self.location = location
-        self.gender = gender
+        self.professions = professions
+        self.connection_dists = connection_dists
+        self.locations = locations
+        self.genders = genders
 
         self.age = age if age != None else "0-300"
         self.start_age = int(re.search(r'^(\d+)', self.age).group(1))
@@ -82,15 +82,16 @@ class Network_Filter:
         self.end_age = 300 if self.end_age == '' else int(self.end_age)
         self.skills = skills
         self.languages = languages
-        self.union_status = union_status
+        self.union_statuses = union_statuses
+
 
     def user_applicable(self, user: User, connection_dist):
-        if ((self.profession != None and self.profession.lower() not in user.title.lower()) or
-                (self.connection_dist != None and self.connection_dist <= connection_dist) or
-                (self.gender != None and user.gender.lower() != self.gender.lower()) or
+        if ((self.professions != None and all([p.lower() not in user.title.lower() for p in self.professions])) or
+                (self.connection_dists != None and all([cd <= connection_dist for cd in self.connection_dists])) or
+                (self.genders != None and all([user.gender.lower() != g.lower() for g in self.genders])) or
                 # (self.union_status != None and self.union user.union_status_id) or # TODO: get union status from user's union status id
                 # (self.skills != None and all([s in user.skills for s in self.skills])) # TODO: save user skills
-                (self.location != None and self.location.lower() not in user.location.lower()) or
+                (self.locations != None and all([l.lower() not in user.location.lower() for l in self.locations])) or
                 (self.age != None and (user.age_range_end < self.start_age or self.end_age < user.age_range_start))
         ):
             return False

@@ -16,6 +16,11 @@ add_sample_posts_with_comments(app)
 def hello():
     return "Hello World!"
 
+def get_split_arg(argName):
+    result = request.args.get(argName, None)
+    if result == None:
+        return None
+    return result.split(',')
 
 @app.route("/network")
 def networking():
@@ -23,17 +28,17 @@ def networking():
     # Location = "Toronto, ON"). If extended, it would allow multiple
     # (e.g. Location = ["Toronto, ON", "Montreal, QC"])
     curr_user_id = int(request.args.get('curr_user_id'))
-    connection_dist = int(request.args.get('connection_dist', 1))
-    profession = request.args.get('profession', None)
-    location = request.args.get('location', None)
-    gender = request.args.get('gender', None)
+    connection_dists = [int(i) for i in request.args.get('connection_dist', '1').split(',')]
+    professions = get_split_arg('profession')
+    locations = get_split_arg('location')
+    genders = get_split_arg('gender')
     age = request.args.get('age', None)  # string still needs to be parsed, e.g. "30-50"
-    skills = request.args.get('skills', None)
-    languages = request.args.get('languages', None)
-    union_status = request.args.get('union_status', None)  # id of status needs to be parsed e.g. "Union"
-    filter = Network_Filter(curr_user_id, profession=profession, connection_dist=connection_dist,
-                            location=location, gender=gender, age=age, skills=skills,
-                            union_status=union_status, languages=languages)
+    skills = get_split_arg('skills')
+    languages = get_split_arg('languages')
+    union_statuses = get_split_arg('union_status')  # id of status needs to be parsed e.g. "Union"
+    filter = Network_Filter(curr_user_id, professions=professions, connection_dists=connection_dists,
+                            locations=locations, genders=genders, age=age, skills=skills,
+                            union_statuses=union_statuses, languages=languages)
     connections = get_network_connections(app, filter)
     return json.dumps({'connections': [c.__dict__ for c in connections]})
 
@@ -79,7 +84,7 @@ def get_post_by_user_id(user_id):
     return json.dumps({'post': [p.__dict__ for p in post]}, default=str)
 
 
-@app.route("/posts/<post_id>/comments")
+@app.route("/posts/comments/<post_id>")
 def get_comments_by_post_id(post_id):
     comments = get_post_comments(app, [post_id])
     return json.dumps({'comments': [c.__dict__ for c in comments]}, default=str)
