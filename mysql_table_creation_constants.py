@@ -207,3 +207,12 @@ education_table_command = '''CREATE TABLE IF NOT EXISTS education(
     FOREIGN KEY(user_id) REFERENCES users(user_id),
     PRIMARY KEY (user_id, title, institution)
 );'''
+
+connection_requests_table_command = '''CREATE TABLE IF NOT EXISTS connection_requests(
+    user_id INT NOT NULL,
+    user_requested VARCHAR(100) NOT NULL,
+    request_date VARCHAR(50) NOT NULL,
+    FOREIGN KEY(user_id) REFERENCES users(user_id),
+    FOREIGN KEY(user_requested) REFERENCES users(user_id),
+    PRIMARY KEY (user_id, user_requested)
+);'''

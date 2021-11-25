@@ -95,6 +95,15 @@ def get_comments_by_id(comment_id):
     comment = get_comments(app, [comment_id])
     return json.dumps({'comment': [c.__dict__ for c in comment]}, default=str)
 
+@app.route("/connection/request/<user_id>/<user_requested>")
+def connection_request(user_id, user_requested):
+    connection_added = add_connection_request(app, user_id, user_requested)
+    return json.dumps(connection_added)
+
+@app.route("/connection/confirm/<user_id1>/<user_id2>")
+def confirm_connection(user_id1, user_id2):
+    result = add_connection(app, user_id1, user_id2)
+    return json.dumps(result)
 
 if __name__ == "__main__":
     app.run()

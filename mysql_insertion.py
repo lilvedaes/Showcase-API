@@ -8,13 +8,13 @@ from objects import DBUser, Credit, Education, User, Post, Network_Filter, Comme
 remove_from_tuple = lambda lst, ignore_elems: [i for i in lst if i not in ignore_elems]
 
 
-# I'm sorry this isn't pretty, but it adds 3 users and 2 connections!
-
 def add_connection(app, user_id1, user_id2):
     connection_date = time.strftime('%Y-%m-%d %H:%M:%S')
     command = ("INSERT INTO connections (user_id1, user_id2, connection_date) VALUES (" + str(user_id1) + ", " + str(
         user_id2) + ", '" + connection_date + "');")
-    return execute_mysql_commands(app, [command])
+    remove_request1 = "DELETE FROM connection_requests WHERE user_id = " + str(user_id1) + " AND user_requested = " + str(user_id2) + ";"
+    remove_request2 = "DELETE FROM connection_requests WHERE user_id = " + str(user_id2) + " AND user_requested = " + str(user_id1) + ";"
+    return execute_mysql_commands(app, [command, remove_request1, remove_request2])
 
 def create_user(app, user: DBUser):
     user_data = user.get_values()[1:] # get all data except user_id
@@ -298,4 +298,12 @@ def get_ethnicities(app, user_id):
     results = execute_mysql_commands(app, [command])[0]
     ethnicities = [result[0] for result in results]
     return ethnicities
+
+def add_connection_request(app, user_id, user_requested) -> bool:
+    connection_date = time.strftime('%Y-%m-%d %H:%M:%S')
+    command = ("INSERT INTO connection_requests (user_id, user_requested, request_date) "
+               "VALUES (" + str(user_id) + ", " + str(user_requested) + ", '" + connection_date + "');")
+    check_command = ("SELECT * FROM connection_requests WHERE user_id = " + str(user_id) + " AND user_requested = " + str(user_requested) + ";")
+    results = execute_mysql_commands(app, [command, check_command])[1][0]
+    return results != None and results[0] == int(user_id)
 
