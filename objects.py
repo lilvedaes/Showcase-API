@@ -30,7 +30,7 @@ class User:
         return (self.user_id, self.first_name, self.last_name, self.profile_image_url,
         self.location, self.title, self.pronoun, self.gender, self.union_status,
         self.height, self.weight, self.eye_colour, self.hair_colour, self.age_range_start,
-        self.age_range_end, self.about_info)
+        self.age_range_end, self.about_info[:1450])
     
     def get_connection_dist(self):
         return self.connection_dist
@@ -62,7 +62,7 @@ class DBUser:
         return (self.user_id, self.first_name, self.last_name, self.profile_image_url,
                 self.location, self.title, self.pronoun_id, self.gender, self.union_status_id,
                 self.height, self.weight, self.eye_colour, self.hair_colour, self.age_range_start,
-                self.age_range_end, self.about_info)
+                self.age_range_end, self.about_info[:1450])
 
     def get_connection_dist(self):
         return self.connection_dist

@@ -17,10 +17,10 @@ def add_connection(app, user_id1, user_id2):
     return execute_mysql_commands(app, [command, remove_request1, remove_request2])
 
 def create_user(app, user: DBUser):
-    user_data = user.get_values()[1:] # get all data except user_id
-    insert_command = ('''INSERT INTO users (first_name, last_name, profile_image_url, location, title, pronoun_id, gender, union_status_id, height, weight, eye_colour, hair_colour, age_range_start, age_range_end, about_info) VALUES ("%s", "%s", "%s", "%s", "%s", %d, "%s", %d, %d, %d, "%s", "%s", %d, %d, "%s")''' %user_data)
+    user_data = list(user.get_values()[1:]) # get all data except user_id
+    insert_command = '''INSERT INTO users (first_name, last_name, profile_image_url, location, title, pronoun_id, gender, union_status_id, height, weight, eye_colour, hair_colour, age_range_start, age_range_end, about_info) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
     check_command = ('''SELECT user_id FROM users WHERE first_name = "''' + user.first_name + '''" AND last_name = "''' + user.last_name + '''";''')
-    execute_mysql_commands(app, [insert_command])
+    execute_prepared_mysql_commands(app, [insert_command], list(user_data))
     result = execute_mysql_commands(app, [check_command])[0][0]
     user.user_id = result[0]  # Now the user has an id, set it in the object
 

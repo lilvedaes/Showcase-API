@@ -3,14 +3,14 @@ from mysql_setup import setup_database
 from mysql_insertion import *
 from constants import *
 import json
+from imdb_add import create_user_from_imdb
 
 app = Flask(__name__)
 
 # MySQL configuration
 setup_database(app)
-add_sample_data(app)
-add_sample_posts_with_comments(app)
-
+# add_sample_data(app)
+# add_sample_posts_with_comments(app)
 
 @app.route("/")
 def hello():
@@ -132,6 +132,21 @@ def create_post():
     new_post_id = add_post(app, new_post)
     return json.dumps({'post_id': new_post_id })
 
+@app.route('/addimdbuser/<imdbUserId>/<title>/<pronoun_id>')
+def addImdbUser(imdbUserId, title, pronoun_id):
+    success = create_user_from_imdb(app, imdbUserId, pronoun_id, title)
+    # success = create_user_from_imdb(app, '3014031', 2, "Actor, Producer, and Executive")
+    # success = create_user_from_imdb(app, '4141252', 2, "Actor and Singer")
+    # success = create_user_from_imdb(app, '1602660', 3, "English Actor and Singer")
+    # success = create_user_from_imdb(app, '3069650', 2, "British Actor, Producer, and Extra")
+    # success = create_user_from_imdb(app, '1275259', 2, "American Actor/Actress and Singer")
+    # success = create_user_from_imdb(app, '5896355', 2, "British-American Actor/Actress")
+    # success = create_user_from_imdb(app, '2088803', 2, "Actor/Actress and Extra")
+    # success = create_user_from_imdb(app, '1869101', 2, "Actor from Cuba")
+    # success = create_user_from_imdb(app, '6073955', 2, "Producer and Actor/Actress")
+    # success = create_user_from_imdb(app, '2074546', 3, "Actor and Producer")
+    # success = create_user_from_imdb(app, '0647634', 2, "American Actor/Actress")
+    return json.dumps({'added': success})
 
 if __name__ == "__main__":
     app.run()
