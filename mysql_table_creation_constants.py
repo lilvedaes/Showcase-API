@@ -136,7 +136,7 @@ posts_table_command = '''CREATE TABLE IF NOT EXISTS posts(
     posted_date DATE NOT NULL,
     caption VARCHAR(500),
     likes INT,
-    media_url VARCHAR(200),
+    media_url VARCHAR(1000),
     FOREIGN KEY(user_id) REFERENCES users(user_id),
     FOREIGN KEY(post_type_id) REFERENCES post_types(post_type_id),
     PRIMARY KEY (post_id)
@@ -213,6 +213,5 @@ connection_requests_table_command = '''CREATE TABLE IF NOT EXISTS connection_req
     user_requested VARCHAR(100) NOT NULL,
     request_date VARCHAR(50) NOT NULL,
     FOREIGN KEY(user_id) REFERENCES users(user_id),
-    FOREIGN KEY(user_requested) REFERENCES users(user_id),
     PRIMARY KEY (user_id, user_requested)
 );'''

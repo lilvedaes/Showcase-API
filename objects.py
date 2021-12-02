@@ -100,7 +100,7 @@ class Network_Filter:
 
 
 class Post:
-    def __init__(self, post_id: int, user_id: int, post_type_id: id, posted_date: str, caption: str,
+    def __init__(self, post_id: int, user_id: int, post_type_id: int, posted_date: str, caption: str,
                  likes: int, media_url: str):
         self.post_id = post_id
         self.user_id = user_id

@@ -105,5 +105,33 @@ def confirm_connection(user_id1, user_id2):
     result = add_connection(app, user_id1, user_id2)
     return json.dumps(result)
 
+@app.route('/post/create', methods=["POST"])
+def create_post():
+    request_data = json.loads(request.data)
+    user_id = request_data.get('user_id', None)
+    type = request_data.get('type', None)
+    title = request_data.get('title', None)
+    content = request_data.get('content', None)
+    print("data before:", user_id, type, title, content)
+    if (not type.isnumeric()):
+        if (type.lower() == 'text'):
+            type = 1
+        elif (type.lower() == 'video'):
+            type = 2
+        elif (type.lower() == 'image'):
+            type = 3
+        elif (type.lower() == 'audio'):
+            type = 4
+        elif (type.lower() == 'file'):
+            type = 5
+    else:
+        type = int(type)
+
+    new_post = Post(post_id=None, user_id=user_id, post_type_id=type, posted_date=time.strftime('%Y-%m-%d %H:%M:%S'),
+                 caption=title, likes=0, media_url=content)
+    new_post_id = add_post(app, new_post)
+    return json.dumps({'post_id': new_post_id })
+
+
 if __name__ == "__main__":
     app.run()
