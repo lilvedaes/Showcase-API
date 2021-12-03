@@ -215,3 +215,11 @@ connection_requests_table_command = '''CREATE TABLE IF NOT EXISTS connection_req
     FOREIGN KEY(user_id) REFERENCES users(user_id),
     PRIMARY KEY (user_id, user_requested)
 );'''
+
+headshots_table_command = '''CREATE TABLE IF NOT EXISTS headshots(
+    user_id INT NOT NULL,
+    headshot_url VARCHAR(100) NOT NULL,
+    priority INT,
+    FOREIGN KEY(user_id) REFERENCES users(user_id),
+    PRIMARY KEY (user_id, headshot_url)
+);'''

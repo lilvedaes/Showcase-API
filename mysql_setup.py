@@ -20,7 +20,8 @@ table_setup = [  # Be careful of order, some databases rely on others
     {'name': 'demo_reels', 'setup': demo_reels_table_command},
     {'name': 'education', 'setup': education_table_command},
     {'name': 'skills', 'setup': skills_table_command},
-    {'name': 'connection_requests', 'setup': connection_requests_table_command}
+    {'name': 'connection_requests', 'setup': connection_requests_table_command},
+    {'name': 'headshots', 'setup': headshots_table_command}
 ]
 
 

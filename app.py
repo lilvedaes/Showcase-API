@@ -9,8 +9,8 @@ app = Flask(__name__)
 
 # MySQL configuration
 setup_database(app)
-# add_sample_data(app)
-# add_sample_posts_with_comments(app)
+add_sample_data(app)
+add_sample_posts_with_comments(app)
 
 @app.route("/")
 def hello():
@@ -57,6 +57,7 @@ def get_user_from_id(user_id):
     user.skills = get_skills(app, user_id)
     user.ethnicities = get_ethnicities(app, user_id)
     user.media = get_user_media(app, user_id)
+    user.headshots = get_headshots(app, user_id)
     user.appearance = [
      { 'title': 'Height', 'value': user.height },
      { 'title': 'Eye Color', 'value': user.eye_colour },
@@ -65,6 +66,15 @@ def get_user_from_id(user_id):
      { 'title': 'Age Range', 'value': str(user.age_range_start) + '-' + str(user.age_range_end) },
     ]
     return json.dumps({ 'data': user.__dict__ })
+
+@app.route('/updateHeadshot', methods=["POST"])
+def update_headshot():
+    request_data = json.loads(request.data)
+    user_id = request_data.get('user_id', None)
+    headshot = request_data.get('type', None)
+    priority = request_data.get('priority', None)
+    update_headshot(app, user_id, headshot, priority)
+    return json.dumps({'success': True})
 
 @app.route("/credits/<user_id>")
 def get_user_credits(user_id):

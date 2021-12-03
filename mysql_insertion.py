@@ -93,6 +93,9 @@ def add_sample_data(app):
     ethnicities = ['Black/African American', 'other']
     for ethnicity in ethnicities:
         add_ethnicity(app, user1.user_id, ethnicity)
+    update_headshot(app, user1.user_id, 'https://image.tmdb.org/t/p/original/r3A7ev7QkjOGocVn3kQrJ0eOouk.jpg', 1)
+    update_headshot(app, user1.user_id, 'https://i.pinimg.com/originals/8f/bc/52/8fbc52ae02f4eff7005f778663c68a22.jpg', 3)
+    update_headshot(app, user1.user_id, 'https://assets.mubi.com/images/cast_member/360849/image-original.jpg?1547911270', 2)
 
 def get_network_connections(app, filter: Network_Filter):
     prev_ids = [filter.user_id]
@@ -307,3 +310,15 @@ def add_connection_request(app, user_id, user_requested) -> bool:
     results = execute_mysql_commands(app, [command, check_command])[1][0]
     return results != None and results[0] == int(user_id)
 
+def update_headshot(app, user_id, headshot, priority):
+    command = ("REPLACE INTO headshots (user_id, headshot_url, priority) VALUES (%s, %s, %s);")
+    results = execute_prepared_mysql_commands(app, [command], [user_id, headshot, priority])[0]
+    return results != None
+
+def get_headshots(app, user_id):
+    command = ("SELECT * FROM headshots WHERE user_id=" + user_id + ";")
+    results = execute_mysql_commands(app, [command])[0]
+    headshots = []
+    for result in results:
+        headshots.append({'src': result[1], 'priority': result[2]})
+    return headshots
