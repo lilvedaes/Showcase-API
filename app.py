@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask_cors import CORS
 from mysql_setup import setup_database
 from mysql_insertion import *
 from constants import *
@@ -6,6 +7,7 @@ import json
 from imdb_add import create_user_from_imdb
 
 app = Flask(__name__)
+CORS(app)
 
 # MySQL configuration
 setup_database(app)
@@ -157,6 +159,36 @@ def addImdbUser(imdbUserId, title, pronoun_id):
     # success = create_user_from_imdb(app, '2074546', 3, "Actor and Producer")
     # success = create_user_from_imdb(app, '0647634', 2, "American Actor/Actress")
     return json.dumps({'added': success})
+
+@app.route('/message', methods=["POST"])
+def addMessage():
+    request_data = json.loads(request.data)
+    user_from = request_data.get('user_from', None)
+    user_to = request_data.get('user_to', None)
+    msg = request_data.get('msg', '')
+    if (user_from == None or user_to == None or msg == 0):
+        return json.dumps({'added': False})
+    success = send_message(app, user_from, user_to, msg) != None
+    return json.dumps({'added': success})
+
+
+@app.route('/getMessages')
+def getMessages():
+    user_id = int(request.args.get('user_id'))
+    user_to = request.args.get('user_to', None)
+    # chats = []
+    chats = get_messages(app, user_id, user_to)
+    
+    users = {}
+    for chat in chats:
+        other_user = chat['messages'][0]['user_to'] if chat['messages'][0]['user_to'] != user_id else chat['messages'][0]['user_from']
+        if (other_user not in users):
+            users[other_user] = get_user_by_id(app, other_user)
+        chat['user'] = users[other_user].__dict__
+        # TODO: get unreadMsgs
+    if (user_to != None):
+        get_user_by_id(app, user_to)
+    return json.dumps(chats)
 
 if __name__ == "__main__":
     app.run()

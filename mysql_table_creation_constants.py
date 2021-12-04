@@ -223,3 +223,15 @@ headshots_table_command = '''CREATE TABLE IF NOT EXISTS headshots(
     FOREIGN KEY(user_id) REFERENCES users(user_id),
     PRIMARY KEY (user_id, headshot_url)
 );'''
+
+messages_table_command = '''CREATE TABLE IF NOT EXISTS messages(
+    user_from INT NOT NULL,
+    user_to INT NOT NULL,
+    time_sent VARCHAR(100) NOT NULL,
+    time_recieved VARCHAR(100),
+    msg MEDIUMTEXT NOT NULL,
+    FOREIGN KEY(user_from) REFERENCES users(user_id),
+    FOREIGN KEY(user_to) REFERENCES users(user_id),
+    PRIMARY KEY(user_from, user_to, time_sent)
+);'''
+

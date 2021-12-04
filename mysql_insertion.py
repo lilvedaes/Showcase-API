@@ -322,3 +322,34 @@ def get_headshots(app, user_id):
     for result in results:
         headshots.append({'src': result[1], 'priority': result[2]})
     return headshots
+
+def send_message(app, user_from, user_to, message):
+    command = "INSERT INTO messages (user_from, user_to, time_sent, time_recieved, msg) VALUES (%s, %s, %s, %s, %s);"
+    time_sent = time.strftime('%Y-%m-%d %H:%M:%S')
+    results = execute_prepared_mysql_commands(app, [command], [user_from, user_to, time_sent, None, message])[0]
+    return results
+
+def get_messages(app, user_id, user_to = None):
+    command = ""
+    results = []
+    if (user_to != None):
+        command = "SELECT user_from, user_to, time_sent, msg FROM messages WHERE user_from = " + str(user_id) + " AND user_to = " + str(user_to) + " OR user_from = " + str(user_to) + " AND user_to = " + str(user_id) + "  ORDER BY time_sent;"
+        results = execute_mysql_commands(app, [command])
+    else:
+        command = "SELECT * FROM messages m1 WHERE user_from = " + str(user_id) + " AND time_sent = (SELECT time_sent FROM messages WHERE user_from = " + str(user_id) + " AND user_to = m1.user_to ORDER BY time_sent DESC LIMIT 1);"
+        command2 = "SELECT * FROM messages m1 WHERE user_to = " + str(user_id) + " AND time_sent = (SELECT time_sent FROM messages WHERE user_to = " + str(user_id) + " AND user_from = m1.user_from ORDER BY time_sent DESC LIMIT 1);"
+        results = execute_mysql_commands(app, [command, command2])
+    chats = {}
+    for r in results:
+        for result in r:
+            key = (result[0], result[1])
+            if key not in chats:
+                key = (result[1], result[0])
+            if key not in chats:
+                chats[key] = []
+            chats[key].append({ 'user_from': result[0], 'user_to': result[1], 'date': result[2][:10], 'time': result[2][11:-3], 'msg': result[4], 'full_date': result[2] })
+    messages = []
+    for key in chats:
+        messages.append({ 'messages': chats[key] })
+    return messages
+
