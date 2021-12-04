@@ -83,6 +83,10 @@ def get_user_credits(user_id):
     credits = get_credits(app, user_id)
     return json.dumps({ 'data': [c.__dict__ for c in credits] })
 
+@app.route("/feed/<user_id>")
+def get_feed_for_user(user_id):
+    feed = get_user_feed(app, user_id)
+    return json.dumps(feed)
 
 @app.route("/posts/<post_id>")
 def get_post_by_id(post_id):

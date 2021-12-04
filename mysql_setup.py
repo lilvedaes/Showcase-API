@@ -21,7 +21,10 @@ table_setup = [  # Be careful of order, some databases rely on others
     {'name': 'education', 'setup': education_table_command},
     {'name': 'skills', 'setup': skills_table_command},
     {'name': 'connection_requests', 'setup': connection_requests_table_command},
-    {'name': 'headshots', 'setup': headshots_table_command}
+    {'name': 'headshots', 'setup': headshots_table_command},
+    {'name': 'messages', 'setup': messages_table_command},
+    {'name': 'likes', 'setup': likes_table_command},
+    {'name': 'comment_likes', 'setup': comment_likes_table_command}
 ]
 
 

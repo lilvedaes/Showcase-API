@@ -167,6 +167,41 @@ def get_posts(app, post_ids_lst: List[int]):
 
     return results
 
+def get_user_feed(app, user_id):
+    '''
+    Need basic user info (first, last, profile image)
+    Need post_id, title, body (contentType, content: [])
+    Need liked_profile_urls: [], date, comments: []
+    '''
+    command = '''SELECT users.user_id, users.first_name, users.last_name, users.profile_image_url,
+    posts.post_id, post_type, caption AS title, media_url AS content, posted_date, comment_num
+ FROM posts
+ JOIN post_types ON posts.post_type_id = post_types.post_type_id
+ JOIN users ON users.user_id = posts.user_id
+ LEFT JOIN (SELECT post_id, COUNT(*) as comment_num FROM comments GROUP BY post_id) c ON c.post_id = posts.post_id
+ WHERE posts.user_id != ''' + str(user_id) + ';'
+
+    results = execute_mysql_commands(app, [command])[0]
+    posts = []
+    likes_commands = []
+    for result in results:
+        user_data, post_data = result[:4], result[4:]
+        post_id = post_data[0]
+        posts.append({
+            'user': { 'user_id': user_data[0], 'first_name': user_data[1], 'last_name': user_data[2], 'profile_image_url': user_data[3] },
+            'post_id': post_id,
+            'title': post_data[2],
+            'body': { 'content_type': post_data[1], 'content': [post_data[3]] },
+            'posted_date': post_data[4],
+            'comment_num': post_data[5]
+        })
+        likes_commands.append("SELECT post_id, profile_image_url FROM likes JOIN users ON likes.user_id = users.user_id WHERE post_id = " + str(post_id) + ';')
+    results = execute_mysql_commands(app, likes_commands)
+    for i in range(len(results)):
+        posts[i]['liked_profile_urls'] = [like[1] for like in results[i]]
+    print(posts)
+    return posts
+
 def get_users_posts(app, user_ids_lst: List[int]):
     raw_results = []
     for user_id in user_ids_lst:

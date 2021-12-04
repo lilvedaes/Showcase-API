@@ -133,7 +133,7 @@ posts_table_command = '''CREATE TABLE IF NOT EXISTS posts(
     post_id INT NOT NULL AUTO_INCREMENT,
     user_id INT,
     post_type_id INT,
-    posted_date DATE NOT NULL,
+    posted_date VARCHAR(30) NOT NULL,
     caption VARCHAR(500),
     likes INT,
     media_url VARCHAR(1000),
@@ -235,3 +235,22 @@ messages_table_command = '''CREATE TABLE IF NOT EXISTS messages(
     PRIMARY KEY(user_from, user_to, time_sent)
 );'''
 
+likes_table_command = '''CREATE TABLE IF NOT EXISTS likes(
+    post_id INT NOT NULL,
+    user_id INT NOT NULL,
+    time_liked VARCHAR(100) NOT NULL,
+    FOREIGN KEY(post_id) REFERENCES posts(post_id),
+    FOREIGN KEY(user_id) REFERENCES users(user_id),
+    PRIMARY KEY(post_id, user_id)
+);'''
+
+comment_likes_table_command = '''CREATE TABLE IF NOT EXISTS comment_likes(
+    post_id INT NOT NULL,
+    comment_id INT NOT NULL,
+    user_id INT NOT NULL,
+    time_liked VARCHAR(100) NOT NULL,
+    FOREIGN KEY(post_id) REFERENCES posts(post_id),
+    FOREIGN KEY(user_id) REFERENCES users(user_id),
+    FOREIGN KEY(comment_id) REFERENCES comments(comment_id),
+    PRIMARY KEY(post_id, user_id)
+);'''
